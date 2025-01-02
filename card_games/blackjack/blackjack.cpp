@@ -64,20 +64,6 @@ bool prob(double probability) {
     return std::uniform_real_distribution<>(0.0, 1.0)(gen) < probability;
 }
 
-int main() {
-  int playerCount = 5;
-  stack<int> deck;
-  vector<vector<int>> players;
-  initGame(deck, players)
-
-  for(auto I : players) {
-    for(int II : I) {
-      printf("%d\n", II);
-    }
-    printf("bestVal:%d\n\n", bestVal(I));
-  }
-}
-
 bool BadBot(vector<int>& hand) {
   return bestVal(hand) < 15 ? true : false;
 }
@@ -98,4 +84,18 @@ bool GoodBot(vector<int>& hand, vector<int> vDeck) {
   }
   
   return prob((float)(k / vDeck.size()));
+}
+
+int main() {
+  int playerCount = 5;
+  stack<int> deck;
+  vector<vector<int>> players;
+  initGame(deck, players)
+
+  for(auto I : players) {
+    for(int II : I) {
+      printf("%d\n", II);
+    }
+    printf("bestVal:%d\n\n", bestVal(I));
+  }
 }

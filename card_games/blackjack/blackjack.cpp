@@ -116,7 +116,7 @@ int main() {
   vector<int> wins = {0,0};
   int draws = 0;
 
-  for(int i = 0; i < 1000000; i++) {
+  for(int i = 0; i < 100000; i++) {
     initGame(deck, vDeck, players, playerCount);
     while( (BadBot(players[0]) || GoodBot(players[1], vDeck)) ) {
       if( BadBot(players[0]) ) {

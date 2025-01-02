@@ -11,10 +11,21 @@ using std::begin;
 using std::end;
 using std::stack;
 using std::find;
+using std::shuffle;
 
 /*>----------------------------------------------------------------------------<*/
 
-void createDeck(stack<int>& deck)
+void fillDeck(stack<int>& deck) {
+  vector<int> vDeck;
+  stack<int> deck;
+  for(int i = 0; i < 52; i++) {
+    int num = (i % 13 + 1);
+    if (num >= 11) num = 10;
+    vDeck.push_back(num);
+  }
+  shuffle(begin(vDeck), end(vDeck), std::mt19937{random_device{}()});
+  for(int n : vDeck) {deck.push(n);}
+}
 
 void deal(stack<int>& deck, vector<int>& player) {
   if(deck.empty()) {cout << "ERROR: empty deck\n"; return;} 
@@ -22,7 +33,14 @@ void deal(stack<int>& deck, vector<int>& player) {
   deck.pop();
 }
 
-void initGame(stack<int>& deck, vector<int>& player){}
+void initGame(stack<int>& deck, vector<vector<int>>& players, int playerCount)
+{
+  for(int i = 0; i < playerCount; i++){
+    players.push_back({});
+    deal(deck, players[i]);
+    deal(deck, players[i]);
+  }
+}
 
 int aceCount(vector<int>& player) {
   int out = 0;
@@ -47,32 +65,17 @@ bool prob(double probability) {
 }
 
 int main() {
-  vector<int> vDeck;
-  stack<int> deck;
-  for(int i = 0; i < 52; i++) {
-    int num = (i % 13) + 1;
-    if(num >= 11) num = 10;
-    vDeck.push_back(num);
-  }
-  std::shuffle(begin(vDeck), end(vDeck), std::mt19937{std::random_device{}()});
-  for(int n : vDeck) {deck.push(n);}
-  
-
   int playerCount = 5;
-  
-
+  stack<int> deck;
   vector<vector<int>> players;
-  for(int i = 0; i < playerCount; i++) {
-    players.push_back({});
-    deal(deck, players[i]);
-    deal(deck, players[i]);
+  initGame(deck, players)
+
+  for(auto I : players) {
+    for(int II : I) {
+      printf("%d\n", II);
+    }
+    printf("bestVal:%d\n\n", bestVal(I));
   }
-
-  players.push_back({1, 1});
-  players.push_back({1, 1, 1});
-  players.push_back({1, 10});
-
-  for(auto I : players) { for(int II : I) { printf("%d\n", II); } printf("bestVal:%d\n\n", bestVal(I)); }
 }
 
 bool BadBot(vector<int>& hand) {

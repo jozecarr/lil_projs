@@ -15,15 +15,15 @@ using std::shuffle;
 
 /*>----------------------------------------------------------------------------<*/
 
-void fillDeck(stack<int>& deck) {
-  vector<int> vDeck;
-  stack<int> deck;
+void fillDeck(stack<int>& deck, vector<int>& vDeck) {
+  vDeck = {};
+  deck = {};
   for(int i = 0; i < 52; i++) {
     int num = (i % 13 + 1);
     if (num >= 11) num = 10;
     vDeck.push_back(num);
   }
-  shuffle(begin(vDeck), end(vDeck), std::mt19937{random_device{}()});
+  shuffle(begin(vDeck), end(vDeck), std::mt19937{std::random_device{}()});
   for(int n : vDeck) {deck.push(n);}
 }
 
@@ -33,8 +33,10 @@ void deal(stack<int>& deck, vector<int>& player) {
   deck.pop();
 }
 
-void initGame(stack<int>& deck, vector<vector<int>>& players, int playerCount)
+void initGame(stack<int>& deck, vector<int>& vDeck, vector<vector<int>>& players, int playerCount)
 {
+  fillDeck(deck, vDeck);
+  players = {};
   for(int i = 0; i < playerCount; i++){
     players.push_back({});
     deal(deck, players[i]);
@@ -57,6 +59,15 @@ int bestVal(vector<int>& player) {
   }
 
   return val + ac;
+}
+
+void printVals(vector<vector<int>> players) {
+  for(auto I : players) {
+    for(int II : I) {
+      printf("%d\n", II);
+    }
+    printf("bestVal:%d\n\n", bestVal(I));
+  }
 }
 
 bool prob(double probability) {
@@ -82,20 +93,43 @@ bool GoodBot(vector<int>& hand, vector<int> vDeck) {
   for(int c : vDeck) {
     if(c <= need) k++;
   }
-  
+
   return prob((float)(k / vDeck.size()));
 }
 
-int main() {
-  int playerCount = 5;
-  stack<int> deck;
-  vector<vector<int>> players;
-  initGame(deck, players)
+int winnerIndex(vector<vector<int>>& players) {
+  int currIndx = -1;
+  int currBest = -1;
+  for(int i = 0; i < players.size(); i++) {
+    int val = bestVal(players[i]);
+    if(val <= 21 && val > currBest) { currBest = val; currIndx = i; }
+  } return currIndx;
+}
 
-  for(auto I : players) {
-    for(int II : I) {
-      printf("%d\n", II);
+int main() {
+  int playerCount = 2;
+  vector<int> vDeck; // vector deck used to store full deck without changes
+  stack<int> deck; // actual play deck
+  vector<vector<int>> players;
+  initGame(deck, vDeck, players, playerCount);
+
+  vector<int> wins = {0,0};
+  int draws = 0;
+
+  for(int i = 0; i < 1000000; i++) {
+    initGame(deck, vDeck, players, playerCount);
+    while( (BadBot(players[0]) || GoodBot(players[1], vDeck)) ) {
+      if( BadBot(players[0]) ) {
+       deal(deck, players[0]);
+      }
+
+      if( GoodBot(players[1], vDeck) ) {
+        deal(deck, players[1]);
+      }
     }
-    printf("bestVal:%d\n\n", bestVal(I));
+    if(winnerIndex(players) != -1) { wins[winnerIndex(players)]++; } 
+    else draws++;
   }
+
+  printf("Bad bot win count: %d\nGood bot win count: %d\nDraws: %d\n", wins[0], wins[1], draws);
 }

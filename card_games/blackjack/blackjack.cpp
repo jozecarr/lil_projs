@@ -4,12 +4,12 @@
 
 void initGame(stack<int>& deck, vector<int>& vDeck, vector<vector<int>>& players, int playerCount)
 {
-  fillDeck(deck, vDeck);
+  fillDeckBJ(deck, vDeck);
   players = {};
   for(int i = 0; i < playerCount; i++){
     players.push_back({});
-    deal(deck, players[i]);
-    deal(deck, players[i]);
+    dealToVec(deck, players[i]);
+    dealToVec(deck, players[i]);
   }
 }
 
@@ -84,11 +84,11 @@ int main() {
     initGame(deck, vDeck, players, playerCount);
     while( (BadBot(players[0]) || GoodBot(players[1], vDeck)) ) {
       if( BadBot(players[0]) ) {
-       deal(deck, players[0]);
+        dealToVec(deck, players[0]);
       }
 
       if( GoodBot(players[1], vDeck) ) {
-        deal(deck, players[1]);
+        dealToVec(deck, players[1]);
       }
     }
     if(winnerIndex(players) != -1) { wins[winnerIndex(players)]++; } 
